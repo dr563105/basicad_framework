@@ -1,0 +1,157 @@
+version: "2.4"
+
+services:
+  build_ros:
+    build:
+      context: .
+    image: lgsvl/lanefollowing:latest
+    container_name: lanefollowing_build
+    volumes:
+      - .:/lanefollowing
+    network_mode: host
+    init: true
+    privileged: true
+    command: /lanefollowing/scripts/build.sh
+
+  collect:
+    build:
+      context: .
+    image: lgsvl/lanefollowing:latest
+    container_name: lanefollowing_collect
+    volumes:
+      - .:/lanefollowing
+    environment:
+      - CUDA_CACHE_PATH=/lanefollowing/docker/.nv
+    runtime: nvidia
+    network_mode: host
+    init: true
+    privileged: true
+    command: /lanefollowing/scripts/collect.sh
+
+  preprocess:
+    build:
+      context: .
+    image: lgsvl/lanefollowing:latest
+    container_name: lanefollowing_preprocess
+    volumes:
+      - .:/lanefollowing
+    environment:
+      - CUDA_CACHE_PATH=/lanefollowing/docker/.nv
+    runtime: nvidia
+    network_mode: host
+    init: true
+    privileged: true
+    command: ["python", "-u", "/lanefollowing/ros2_ws/src/lane_following/train/preprocess.py"]
+
+  train:
+    build:
+      context: .
+    image: lgsvl/lanefollowing:latest
+    container_name: lanefollowing_train
+    volumes:
+      - .:/lanefollowing
+    environment:
+      - CUDA_CACHE_PATH=/lanefollowing/docker/.nv
+    runtime: nvidia
+    network_mode: host
+    init: true
+    privileged: true
+    command: ["python", "-u", "/lanefollowing/ros2_ws/src/lane_following/train/train.py"]
+
+  drive:
+    build:
+      context: .
+    image: lgsvl/lanefollowing:latest
+    container_name: lanefollowing_drive
+    volumes:
+      - .:/lanefollowing
+    environment:
+      - CUDA_CACHE_PATH=/lanefollowing/docker/.nv
+    runtime: nvidia
+    network_mode: host
+    init: true
+    privileged: true
+    command: /lanefollowing/scripts/drive.sh
+
+  drive_visual:
+    build:
+      context: .
+    image: lgsvl/lanefollowing:latest
+    container_name: lanefollowing_drive_visual
+    volumes:
+      - ${XAUTHORITY}:/tmp/.Xauthority
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - .:/lanefollowing
+    environment:
+      - DISPLAY
+      - XAUTHORITY=/tmp/.Xauthority
+      - CUDA_CACHE_PATH=/lanefollowing/docker/.nv
+    runtime: nvidia
+    network_mode: host
+    init: true
+    privileged: true
+    command: /lanefollowing/scripts/drive_visual.sh
+
+  drive_cpu:
+    build:
+      context: .
+    image: lgsvl/lanefollowing:latest
+    container_name: lanefollowing_drive_cpu
+    volumes:
+      - ${XAUTHORITY}:/tmp/.Xauthority
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - .:/lanefollowing
+    environment:
+      - DISPLAY
+      - XAUTHORITY=/tmp/.Xauthority
+      - QT_X11_NO_MITSHM=1
+      - LIBOVERLAY_SCROLLBAR=0
+      - GTK2_RC_FILES=/usr/share/themes/Adwaita/gtk-2.0/gtkrc
+      - GTK_THEME=Adwaita
+      - CUDA_VISIBLE_DEVICES=-1
+    network_mode: host
+    init: true
+    command: /lanefollowing/scripts/drive.sh
+
+  drive_visual_cpu:
+    build:
+      context: .
+    image: lgsvl/lanefollowing:latest
+    container_name: lanefollowing_drive_visual_cpu
+    volumes:
+      - ${XAUTHORITY}:/tmp/.Xauthority
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - .:/lanefollowing
+    environment:
+      - DISPLAY
+      - XAUTHORITY=/tmp/.Xauthority
+      - QT_X11_NO_MITSHM=1
+      - LIBOVERLAY_SCROLLBAR=0
+      - GTK2_RC_FILES=/usr/share/themes/Adwaita/gtk-2.0/gtkrc
+      - GTK_THEME=Adwaita
+      - CUDA_VISIBLE_DEVICES=-1
+      - TF_NEED_CUDA=0
+    network_mode: host
+    init: true
+    command: /lanefollowing/scripts/drive_visual.sh
+
+  jupyter:
+    build:
+      context: .
+    image: lgsvl/lanefollowing:latest
+    container_name: lanefollowing_jupyter
+    volumes:
+      - .:/lanefollowing
+    environment:
+      - QT_X11_NO_MITSHM=1
+      - LIBOVERLAY_SCROLLBAR=0
+      - GTK2_RC_FILES=/usr/share/themes/Adwaita/gtk-2.0/gtkrc
+      - GTK_THEME=Adwaita
+      - CUDA_CACHE_PATH=/lanefollowing/docker/.nv
+    runtime: nvidia
+    network_mode: host
+    init: true
+    privileged: true
+    tty: true
+    stdin_open: true
+    command: ["/run_jupyter.sh", "--allow-root", "--ip=localhost"]
