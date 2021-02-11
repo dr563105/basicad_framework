@@ -1,0 +1,191 @@
+[
+  {
+    "type":"Color Camera",
+    "name":"Main Camera",
+    "params":{
+      "Width":1920,
+      "Height":1080,
+      "Frequency":15,
+      "JpegQuality":75,
+      "FieldOfView":50,
+      "MinDistance":0.1,
+      "MaxDistance":1000,
+      "Topic":"/simulator/sensor/camera/center/image/compressed",
+      "Frame":"main_camera"
+    },
+    "transform":{
+      "x":0,
+      "y":1.7,
+      "z":-0.2,
+      "pitch":0,
+      "yaw":0,
+      "roll":0
+    }
+  },
+  {
+    "type":"Depth Camera",
+    "name":"Depth center Camera",
+    "params":{
+      "Width":1920,
+      "Height":1080,
+      "Frequency":15,
+      "JpegQuality":75,
+      "FieldOfView":50,
+      "MinDistance":0.1,
+      "MaxDistance":1000,
+      "Topic":"/simulator/sensor/depth_camera/center/image/compressed"
+    },
+    "transform":{
+      "x":0,
+      "y":1.7,
+      "z":-0.2,
+      "pitch":0,
+      "yaw":0,
+      "roll":0
+    }
+  },
+  {
+    "type":"Color Camera",
+    "name":"Left 90 Camera",
+    "params":{
+      "Width":1920,
+      "Height":1080,
+      "Frequency":15,
+      "JpegQuality":75,
+      "FieldOfView":50,
+      "MinDistance":0.1,
+      "MaxDistance":1000,
+      "Topic":"/simulator/sensor/camera/left90/image/compressed",
+      "Frame":"left_camera",
+      "Distorted":true
+    },
+    "transform":{
+      "x":-1,
+      "y":1.7,
+      "z":-0.2,
+      "pitch":20,
+      "yaw":-90,
+      "roll":0
+    }
+  },
+  {
+    "type":"Depth Camera",
+    "name":"Depth left90 Camera",
+    "params":{
+      "Width":1920,
+      "Height":1080,
+      "Frequency":15,
+      "JpegQuality":75,
+      "FieldOfView":50,
+      "MinDistance":0.1,
+      "MaxDistance":1000,
+      "Topic":"/simulator/sensor/depth_camera/left90/image/compressed"
+    },
+    "transform":{
+      "x":-1,
+      "y":1.7,
+      "z":-0.5,
+      "pitch":20,
+      "yaw":-90,
+      "roll":0
+    }
+  },
+  {
+    "type":"Color Camera",
+    "name":"Right 90 Camera",
+    "params":{
+      "Width":1920,
+      "Height":1080,
+      "Frequency":15,
+      "JpegQuality":75,
+      "FieldOfView":50,
+      "MinDistance":0.1,
+      "MaxDistance":1000,
+      "Topic":"/simulator/sensor/camera/right90/image/compressed",
+      "Frame":"right_camera"
+    },
+    "transform":{
+      "x":1,
+      "y":1.7,
+      "z":-0.2,
+      "pitch":20,
+      "yaw":90,
+      "roll":0
+    }
+  },
+  {
+    "type":"Depth Camera",
+    "name":"Depth right90 Camera",
+    "params":{
+      "Width":1920,
+      "Height":1080,
+      "Frequency":15,
+      "JpegQuality":75,
+      "FieldOfView":50,
+      "MinDistance":0.1,
+      "MaxDistance":1000,
+      "Topic":"/simulator/sensor/depth_camera/right90/image/compressed"
+    },
+    "transform":{
+      "x":1,
+      "y":1.7,
+      "z":-0.2,
+      "pitch":20,
+      "yaw":90,
+      "roll":0
+    }
+  },
+  {
+    "type":"Segmentation Camera",
+    "name":"Segmentation Camera",
+    "params":{
+      "Width":1920,
+      "Height":1080,
+      "Frequency":15,
+      "FieldOfView":50,
+      "MinDistance":0.1,
+      "MaxDistance":1000,
+      "InstanceSegmentationTags":[
+        "Car",
+        "Pedestrian"
+      ],
+      "Topic":"/simulator/sensor/segmentation_camera"
+    },
+    "transform":{
+      "x":0,
+      "y":1.7,
+      "z":-0.2,
+      "pitch":0,
+      "yaw":0,
+      "roll":0
+    }
+  },
+  {
+    "type":"Radar",
+    "name":"Radar",
+    "params":{
+      "Frequency":13.4,
+      "Topic":"/simulator/sensor/radar"
+    },
+    "transform":{
+      "x":0,
+      "y":0.689,
+      "z":2.272,
+      "pitch":0,
+      "yaw":0,
+      "roll":0
+    }
+  },
+  {
+    "type":"Keyboard Control",
+    "name":"Keyboard Car Control"
+  },
+  {
+    "type":"Lane Following",
+    "name":"Lane Following Sensor",
+    "params":{
+      "Topic":"/lanefollowing/control_cmd",
+      "ControlCommandTopic":"/simulator/control/command"
+    }
+  }
+]
