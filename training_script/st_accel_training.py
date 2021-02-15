@@ -15,6 +15,10 @@ from datetime import datetime
 import time
 import errno
 from sklearn.model_selection import train_test_split
+
+import sys
+sys.path.append('../')
+
 from config import *
 
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
@@ -42,11 +46,11 @@ input_layer = Input(shape = TIMESTEPS_INPUT_SHAPE)
 input_normalisation= Lambda(lambda x: x / 255.0) (input_layer)
 
 #Conv layers
-conv2d_layer_1 = TimeDistributed(Conv2D(CONV2D_FILTERS_1, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (input_normalisation) 
-conv2d_layer_2 = TimeDistributed(Conv2D(CONV2D_FILTERS_2, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_1) 
+conv2d_layer_1 = TimeDistributed(Conv2D(CONV2D_FILTERS_1, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (input_normalisation)
+conv2d_layer_2 = TimeDistributed(Conv2D(CONV2D_FILTERS_2, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_1)
 conv2d_layer_3 = TimeDistributed(Conv2D(CONV2D_FILTERS_3, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_2)
 conv2d_layer_4 = TimeDistributed(Conv2D(CONV2D_FILTERS_4, KERNEL_SIZE_2, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_3)
-conv2d_layer_5 = TimeDistributed(Conv2D(CONV2D_FILTERS_4, KERNEL_SIZE_2, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_4) 
+conv2d_layer_5 = TimeDistributed(Conv2D(CONV2D_FILTERS_4, KERNEL_SIZE_2, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_4)
 flatten_layer = TimeDistributed(Flatten()) (conv2d_layer_5)
 
 #LSTM layers
@@ -77,14 +81,14 @@ model.compile(optimizer=Adam(lr=MODEL_LEARNING_RATE, decay = MODEL_LEARNING_DECA
 
 #Callbacks definition
 es = EarlyStopping(monitor=CALLBACKS_MONITOR, mode=CALLBACKS_MONITOR_MODE, verbose=CALLBACKS_VERBOSITY, patience=EARLYSTOPPING_PATIENCE)
-mc = ModelCheckpoint(os.path.join(MODEL_PATH, MODEL_CHECKPOINT_FILENAME), 
+mc = ModelCheckpoint(os.path.join(MODEL_PATH, MODEL_CHECKPOINT_FILENAME),
 	monitor=CALLBACKS_MONITOR, mode=CALLBACKS_MONITOR_MODE, verbose=CALLBACKS_VERBOSITY, save_best_only=MODEL_CHECKPOINT_SAVE_BEST)
 logdir = TENSORBOARD_LOG_PATH
 tbc = TensorBoard(log_dir=logdir)
 
 #Fitting the model
 t0 = time.time()
-model.fit(X_train, Y_train, validation_data=(X_test, Y_test), shuffle=MODEL_FIT_SHUFFLE, epochs=TRAINING_EPOCH, batch_size=BATCH_SIZE, 
+model.fit(X_train, Y_train, validation_data=(X_test, Y_test), shuffle=MODEL_FIT_SHUFFLE, epochs=TRAINING_EPOCH, batch_size=BATCH_SIZE,
     verbose=MODEL_FIT_VERBOSITY, callbacks=[mc, tbc])
 
 t1 = time.time()

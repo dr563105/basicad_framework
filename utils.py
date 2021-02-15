@@ -16,7 +16,7 @@ HDF5_PATH_DS1 = u'{}/data/hdf5/ds1'.format(BASE_PATH)
 HDF5_PATH_DS2 = u'{}/data/hdf5/ds2'.format(BASE_PATH)
 HDF5_PATH_DS3 = u'{}/data/hdf5/ds3'.format(BASE_PATH)
 RADAR_PATH = u'{}/data/radar'.format(BASE_PATH)
-MODEL_PATH = u'{}/model'.format(BASE_PATH)
+MODEL_PATH = u'{}/models'.format(BASE_PATH)
 MOVED_FILES_PATH = u'{}/data/handbrake_reverse_images'.format(BASE_PATH)
 IMAGE_DIM = (160, 70) #changed from (320, 70)
 

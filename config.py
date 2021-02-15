@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 CSV_PATH = u'{}/data'.format(BASE_PATH)
@@ -7,7 +8,7 @@ IMG_PATH = u'{}/data/img'.format(BASE_PATH)
 IMG_PATH_DS3 = u'{}/data/ds3/img'.format(BASE_PATH)
 HDF5_PATH = u'{}/data/hdf5'.format(BASE_PATH)
 HDF5_PATH_DS3 = u'{}/data/hdf5/ds3'.format(BASE_PATH)
-MODEL_PATH = u'{}/model'.format(BASE_PATH)
+MODEL_PATH = u'{}/models'.format(BASE_PATH)
 IMAGE_DIM = (160, 70) #changed from (320, 70)
 TIMESTEPS = 15
 GPU_ID_TO_USE = '1'
@@ -45,7 +46,6 @@ DENSE_OUTPUT_ACTIVATION_FN_ACCELERATION = 'tanh'
 DENSE_OUTPUT_ACTIVATION_FN_CLASSIFICATION = 'softmax'
 MODEL_LEARNING_RATE = 1e-04
 MODEL_LEARNING_DECAY = 0.0
-MODEL_OPTIMIZER = Adam
 MODEL_LOSS_FN1 = 'mse'
 MODEL_LOSS_FN2 = 'cce'
 PLOT_MODEL_SAVE_FILE = 'evaluate_ts15_ds3_Class6_cseg2.png'

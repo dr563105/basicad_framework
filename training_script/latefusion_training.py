@@ -16,6 +16,10 @@ import time
 import errno
 from sklearn.model_selection import train_test_split
 import functools
+
+import sys
+sys.path.append('../')
+
 from config import *
 
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
@@ -24,13 +28,13 @@ os.environ["CUDA_VISIBLE_DEVICES"] = GPU_ID_TO_USE
 #Custom weighting functions
 def w_categorical_crossentropy(y_true, y_pred, sample_weight=SAMPLE_WEIGHT):
 	#x=tf.keras.losses.CategoricalCrossentropy(y_pred, y_true)
-	
+
 	cce = tf.keras.losses.CategoricalCrossentropy()
 	x=cce(y_true, y_pred)
 	y=tf.reduce_mean(x)
 	#print("Shape of cce",x)
 	#print("Shape of cce after mean",y)
-	return y*WEIGHT_FOR_CCE 
+	return y*WEIGHT_FOR_CCE
 
 
 def w_mse(y_true, y_pred, sample_weight=SAMPLE_WEIGHT):
@@ -38,7 +42,7 @@ def w_mse(y_true, y_pred, sample_weight=SAMPLE_WEIGHT):
 	y=tf.reduce_mean(x)
 	#print("Shape of mse",x)
 	#print("Shape of mse after mean ",y)
-	return y*WEIGHT_FOR_MSE 
+	return y*WEIGHT_FOR_MSE
 
 def st_mse(y_true, y_pred, sample_weight=SAMPLE_WEIGHT):
 	x=tf.square(y_true - y_pred)
@@ -80,13 +84,13 @@ input_2 = Lambda(lambda x:x[ :, :, :, :, 1:2]) (input_layer)
 
 #Take the first one and do convolutional operation
 input_normalisation_1= Lambda(lambda x: x / 255.0) (input_1)
-conv2d_layer_1 = TimeDistributed(Conv2D(CONV2D_FILTERS_1, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (input_normalisation_1) 
-conv2d_layer_2 = TimeDistributed(Conv2D(CONV2D_FILTERS_2, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_1) 
+conv2d_layer_1 = TimeDistributed(Conv2D(CONV2D_FILTERS_1, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (input_normalisation_1)
+conv2d_layer_2 = TimeDistributed(Conv2D(CONV2D_FILTERS_2, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_1)
 
 #Take the second one and do convolutional operation
 input_normalisation_2= Lambda(lambda x: x / 255.0) (input_2)
-conv2d_layer_11 = TimeDistributed(Conv2D(CONV2D_FILTERS_1, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (input_normalisation_2) 
-conv2d_layer_22 = TimeDistributed(Conv2D(CONV2D_FILTERS_2, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_11) 
+conv2d_layer_11 = TimeDistributed(Conv2D(CONV2D_FILTERS_1, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (input_normalisation_2)
+conv2d_layer_22 = TimeDistributed(Conv2D(CONV2D_FILTERS_2, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_11)
 
 #Concatenate the two conv-ed feature maps
 concatenate_layer = concatenate([conv2d_layer_2, conv2d_layer_22])
@@ -94,7 +98,7 @@ concatenate_layer = concatenate([conv2d_layer_2, conv2d_layer_22])
 #Continue conv operations
 conv2d_layer_3 = TimeDistributed(Conv2D(CONV2D_FILTERS_5, KERNEL_SIZE_1, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (concatenate_layer)
 conv2d_layer_4 = TimeDistributed(Conv2D(CONV2D_FILTERS_6, KERNEL_SIZE_2, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_3)
-conv2d_layer_5 = TimeDistributed(Conv2D(CONV2D_FILTERS_6, KERNEL_SIZE_2, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_4) 
+conv2d_layer_5 = TimeDistributed(Conv2D(CONV2D_FILTERS_6, KERNEL_SIZE_2, strides=STRIDE_DIM_1, padding=PADDING, activation=CONV2D_ACTIVATION_FN)) (conv2d_layer_4)
 
 #Flatten into a single feature vector
 flatten_layer = TimeDistributed(Flatten()) (conv2d_layer_5)
@@ -127,7 +131,7 @@ model = Model(inputs=input_layer, outputs=[output_classification, output_velocit
 model.summary()
 plot_model(model, to_file=PLOT_MODEL_SAVE_FILE, show_shapes=PLOT_MODEL_SHOW_SHAPES)
 
-model.compile(optimizer=MODEL_OPTIMIZER(lr=MODEL_LEARNING_RATE, decay = MODEL_LEARNING_DECAY), loss={'classification':ncce, 'st':nstmse,'velocity':nmse})
+model.compile(optimizer=Adam(lr=MODEL_LEARNING_RATE, decay = MODEL_LEARNING_DECAY), loss={'classification':ncce, 'st':nstmse,'velocity':nmse})
 
 
 #print("Loading model_criteria68....")
@@ -135,16 +139,16 @@ model.compile(optimizer=MODEL_OPTIMIZER(lr=MODEL_LEARNING_RATE, decay = MODEL_LE
 
 #Callbacks definitions
 es = EarlyStopping(monitor=CALLBACKS_MONITOR, mode=CALLBACKS_MONITOR_MODE, verbose=CALLBACKS_VERBOSITY, patience=EARLYSTOPPING_PATIENCE)
-mc = ModelCheckpoint(os.path.join(MODEL_PATH, MODEL_CHECKPOINT_FILENAME), 
+mc = ModelCheckpoint(os.path.join(MODEL_PATH, MODEL_CHECKPOINT_FILENAME),
 	monitor=CALLBACKS_MONITOR, mode=CALLBACKS_MONITOR_MODE, verbose=CALLBACKS_VERBOSITY, save_best_only=MODEL_CHECKPOINT_SAVE_BEST)
 logdir = TENSORBOARD_LOG_PATH
 tbc = TensorBoard(log_dir=logdir)
 
 #Fitting the model
 t0 = time.time()
-model.fit(x=[X_train, Y_train], {'classification': Y_train,'st': Y_train[:,-2],'velocity': Y_train[:,-1] } , 
-	validation_data=(x=[X_test, Y_test[:,-1]], {'classification': Y_test[:,0:3],'st': Y_test[:,-2],'velocity': Y_test[:,-1]}), 
-	shuffle=MODEL_FIT_SHUFFLE, epochs=TRAINING_EPOCH, batch_size=BATCH_SIZE, 
+model.fit(x=[X_train, Y_train], {'classification': Y_train,'st': Y_train[:,-2],'velocity': Y_train[:,-1] } ,
+	validation_data=(x=[X_test, Y_test[:,-1]], {'classification': Y_test[:,0:3],'st': Y_test[:,-2],'velocity': Y_test[:,-1]}),
+	shuffle=MODEL_FIT_SHUFFLE, epochs=TRAINING_EPOCH, batch_size=BATCH_SIZE,
 	verbose=MODEL_FIT_VERBOSITY, callbacks=[mc, tbc])
 
 t1 = time.time()

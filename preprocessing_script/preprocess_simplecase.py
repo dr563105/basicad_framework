@@ -5,13 +5,17 @@ import csv
 import time
 import h5py
 import numpy as np
+
+import sys
+sys.path.append('../')
+
 from utils import mkdir_p, errno
 from datetime import datetime as dt
-from backports.datetime_fromisoformat import MonkeyPatch
+#from backports.datetime_fromisoformat import MonkeyPatch
 import matplotlib.pyplot as plt
 from config import *
 
-MonkeyPatch.patch_fromisoformat()
+#MonkeyPatch.patch_fromisoformat()
 
 def split_data(train_test_ratio):
 	images = []
@@ -24,27 +28,27 @@ def split_data(train_test_ratio):
 			value = [(item) for item in line[1][1:-1].split(",")]
 			value = [float(item) for item in value[:4]]
 			value[1], value[2] = value[2], value[1]
-			labels.append(value) 
+			labels.append(value)
 
-	
+
 	images = np.array(images) #.reshape(len(images), 1)
 	labels = np.array(labels)	 #.reshape(len(labels), 5) #include velocity and others
 	print(f"Images shape: {images.shape}")
 	print(f"Labels shape: {labels.shape}")
-	
-	
+
+
 	data_size = images.shape[0]
 	print('Total data size:', data_size)
-	
+
 	indices = np.arange(data_size)
 	train_size = int(round(data_size * train_test_ratio))
 	train_idx, test_idx = indices[:train_size], indices[train_size:]
-	
+
 	X_train = images[train_idx, :]
 	Y_train = labels[train_idx, :]
 	#X_test = images[test_idx, :]
 	#Y_test = labels[test_idx, :]
-	
+
 	if X_train.shape[0] > 0:
 		with open(os.path.join(HDF5_PATH_DS3, 'train_ds3_1.txt'), 'w+') as f:
 			for i in range(len(X_train)):
@@ -55,39 +59,39 @@ def split_data(train_test_ratio):
 	# 		for i in range(len(X_test)):
 	# 			f.write(f'{X_test[i][0]}|{list(Y_test[i][:])}\n')
 
-	
+
 def collate_data(phase):
 
 	with open(os.path.join(HDF5_PATH_DS3, f'{phase}_ds3_1.txt'), 'r') as f:
 		lines = f.readlines()
 		data = csv.reader(lines, delimiter = "|")
-	
-	labels = []	
+
+	labels = []
 	collected_images =[]
 	images_concat = []
-		
+
 	for index in data:
-		
+
 		img_id = index[0]
 		for camera in ['centre']:
-			
+
 			img_path = os.path.join(IMG_PATH_DS3, f'{camera}-{img_id}.jpg')
 			image = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 			image = image[130:, :410]
 			image = cv2.resize(image, IMAGE_DIM, interpolation=cv2.INTER_AREA)
 			collected_images.append(image)
-			
+
 		concaImag = np.dstack(collected_images)
 		images_concat.append(concaImag) #nx70x160x1
 		#print("length of images_concat", len(images_concat))
 		#print("images_concat shape: ", np.array(images_concat).shape)
 		collected_images = []
 		concaImag = []
-			
-		label = label = [float(item) for item in index[1][1:-1].split(",")] #float(index[1]) 
+
+		label = label = [float(item) for item in index[1][1:-1].split(",")] #float(index[1])
 		labels.append(label)
-		
-	
+
+
 	print("length of images_concat", len(images_concat))
 	print("length of labels", len(labels))
 
@@ -95,19 +99,19 @@ def collate_data(phase):
 	labels = np.array(labels)
 	print("images_concat shape: ", np.array(images_concat).shape)
 	print("labels shape: ", np.array(labels).shape)
-	
+
 	write_to_hdf5(images_concat, labels, phase)
 
 def write_to_hdf5(X_data, Y_data, phase):
 	h5_file = os.path.join(HDF5_PATH_DS3, f'{phase}_ds3_1.h5')
-			
+
 	with h5py.File(h5_file, 'w') as f:
 		f.create_dataset('data', data=X_data)
 		f.create_dataset('label', data=Y_data)
-	
+
 	with open(os.path.join(HDF5_PATH_DS3, f'{phase}_ds3_1_h5_list.txt'), 'a+') as f:
 		f.write(h5_file + '\n')
-			
+
 def truncate_hdf5():
 	for f in [f for f in os.listdir(HDF5_PATH_DS3)]:
 		os.remove(os.path.join(HDF5_PATH_DS3, f))
