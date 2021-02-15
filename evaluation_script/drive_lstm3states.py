@@ -18,9 +18,10 @@ import math
 import time
 import collections
 
-#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+#Argument to choose which GPU to use when multiple GPUs are available
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+#Image dimension after preprocessing
 IMAGE_DIM = (160, 70)
-
 
 class Drive(Node):
     def __init__(self):
@@ -81,15 +82,15 @@ class Drive(Node):
             #print("queue images shape: ", np.array(self.queue_images).shape) #(15, 70, 160, 1)
             if (len(self.queue_images)  == self.time_steps):
                 #queuedimages = np.array(self.queue_images)
-                queuedimages = np.expand_dims(self.queue_images, axis=0) 
+                queuedimages = np.expand_dims(self.queue_images, axis=0)
                 #print("queued images shape: ", np.array(queuedimages).shape)
                 cmds, st = self.predict(self.model, queuedimages)
                 self.log.info(f'Predicted commands: "{cmds[0][0], cmds[0][1], cmds[0][2], st[0][0]}"')
                 if (cmds[0][0] > cmds[0][2]) and (cmds[0][0] > cmds[0][1]):
                     self.acceleration = cmds[0][0]
                 elif (cmds[0][1] > cmds[0][2]) and ((cmds[0][1]) > (cmds[0][0])): #and (0.0 < (cmds[0][1]) < 1.0):
-                    self.acceleration = -cmds[0][1]              
-                else: 
+                    self.acceleration = -cmds[0][1]
+                else:
                     self.acceleration = 0.0
 
                 self.steering = st[0][0]
@@ -106,7 +107,7 @@ class Drive(Node):
         image = cv2.imdecode(c, cv2.IMREAD_GRAYSCALE)
         image = cv2.resize(image, (480,270), interpolation=cv2.INTER_AREA)
         image = image[130:, :410]
-        image = cv2.resize(image, IMAGE_DIM, interpolation=cv2.INTER_AREA) 
+        image = cv2.resize(image, IMAGE_DIM, interpolation=cv2.INTER_AREA)
         image_list.append(image)
         image = np.dstack(image_list)
         #image = np.expand_dims(image, axis=0)
@@ -131,7 +132,7 @@ class Drive(Node):
 
     def predict(self, model, img):
         cmds,st  = self.model.predict(img)
-        return cmds,st 
+        return cmds,st
 
     def visualize(self, img, steering):
         c = np.fromstring(bytes(img.data), np.uint8)

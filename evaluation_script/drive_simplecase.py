@@ -18,7 +18,9 @@ import math
 import time
 import collections
 
+#Argument to choose which GPU to use when multiple GPUs are available
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+#Image dimension after preprocessing
 IMAGE_DIM = (160, 70)
 
 
@@ -106,11 +108,11 @@ class Drive(Node):
         image_list.append(image)
         image = np.dstack(image_list)
         image = np.expand_dims(image, axis=0)
-        #image = image[:, :, :, np.newaxis] 
+        #image = image[:, :, :, np.newaxis]
         #print(image.shape)
         #  # img = img[np.newaxis, :, :]
         steering = self.model.predict(image)
-        
+
 
         return steering
 
