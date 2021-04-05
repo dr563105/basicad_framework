@@ -42,7 +42,7 @@ pre-processing and training module, and finally evaluation module.
 #### Clone the repository:
 In the terminal at appropriate location run this command - 
 ```
-git clone --recurse-submodules https://github.com/dr563105/basicad_framework.git
+git clone https://github.com/dr563105/basicad_framework.git
 ```
 #### Pull the latest Docker image
 Then in the terminal run this command -
