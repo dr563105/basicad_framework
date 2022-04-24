@@ -14,7 +14,7 @@ Cars](https://developer.nvidia.com/blog/deep-learning-self-driving-cars/).
 ## Complete End-to-End Architecture
 ![here](https://github.com/dr563105/basicad_framework/blob/main/autonomous_driving_framework_architecture.png)
 
-At the high-level, the architecture consists of four modules: sensor module, data collection,
+At the highest-level, the architecture consists of four modules: sensor module, data collection,
 pre-processing and training module, and finally evaluation module. 
 
 ## Features
