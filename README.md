@@ -118,6 +118,14 @@ docker-compose up drive_visual
 * For convenience and CUDA dependencies, both the scripts are advised to be executed
   outside the docker. 
 
+### Findings
+* Light plays an important factor in a vehicle recognising its surroundings.
+* RGB-Greyscale image is sufficient for steering.
+* Fusing techniques help in night-time driving and collision avoidance.
+
+### Things to improve
+* Data is imbalanced so appropriate cross validation techniques need to be applied.
+
 ### Useful Links/Tips
 * Robotic Operating System[(ROS)](https://www.ros.org/about-ros/)
 * [LGSVL simulator](https://www.lgsvlsimulator.com/)  
