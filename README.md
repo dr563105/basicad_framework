@@ -1,10 +1,16 @@
-# Basic Autonomous Driving Framework
-This documentation describes how an end-to-end neural network for autonomous driving is
-implemented -- use ROS2 nodes to receive sensor data from LGSVL Simulator,
-apply a deep learning neural network to train the model, use the trained model to send
-control commands using ROS2 nodes back to LGSVL Simulator, and drive a car autonomously. This framework
-is tested to run in Ubuntu(Linux). It is assumed that you have some experience in using
-Linux, Git, ROS, Docker, web browsers, and Python.
+# Autonomous Driving Framework
+
+## Objective
+To design and implement an end-to-end neural network for autonomous driving using simpler CNN framework.
+
+## Tools used
+- LGSVL simulator as driving simulator
+- ROS2 nodes to receive sensor data from LGSVL Simulator
+- Preprocessing and feature engineering using Python, OpenCV
+- Keras/Tensorflow deep learning CNN model to train the data
+- Containerised docker image to run simulation using the GPU
+
+It is assumed that you have some experience in using Linux, Git, ROS, Docker, web browsers, and Python.
 
 This project is the modified version of [ROS2 End-to-End Lane Following Model with LGSVL
 Simulator](https://www.lgsvlsimulator.com/docs/lane-following/) which is in turn inspired by [NVIDIA's
